@@ -1,3 +1,6 @@
+import Vue from 'vue';
+import App from './App.vue';
+
 import OAuthManager from './oauth-manager';
 import SpotifyWebApi from './api';
 import Deduplicator from './deduplicator';
@@ -12,8 +15,10 @@ let deduplicator;
 
 let token, api;
 
+Vue.component(App);
 let app = new Vue({
   el: '#app',
+  render: h => h(App),
   data: {
     isLoggedIn: false,
     toProcess: 100,

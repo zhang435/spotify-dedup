@@ -1,13 +1,19 @@
 {
   "name": "spotify-dedup",
   "devDependencies": {
+    "@vue/component-compiler-utils": "^2.0.0",
     "babel-core": "^6.26.3",
     "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-vue": "^2.0.0",
     "babel-runtime": "^6.26.0",
     "gh-pages": "^1.2.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.2.0",
-    "prettier": "^1.13.5"
+    "parcel-bundler": "^1.9.3",
+    "parcel-plugin-vue": "^1.5.0",
+    "prettier": "^1.13.5",
+    "vue-template-compiler": "^2.5.16"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -24,7 +30,9 @@
     "build": "rm -rf dist && parcel build app/*.html --public-url ./"
   },
   "dependencies": {
-    "promise-throttle": "^1.0.0"
+    "promise-throttle": "^1.0.0",
+    "vue": "^2.5.16",
+    "vue-hot-reload-api": "^2.3.0"
   },
   "version": "1.0.0",
   "description": "Remove duplicates from your Spotify library",

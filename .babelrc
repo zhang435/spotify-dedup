@@ -1,4 +1,6 @@
 {
+  presets: ['env', 'vue'],
+
   plugins: [
     [
       'transform-runtime',
