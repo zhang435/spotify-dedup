@@ -261,6 +261,7 @@ class PlaylistDeduplicator extends BaseDeduplicator {
               tracks.push(item && item.track);
             });
           });
+          console.log('resolved', playlist.id);
           resolve(tracks);
         })
         .catch(reject);
@@ -350,8 +351,8 @@ class SavedTracksDeduplicator extends BaseDeduplicator {
 
   static async removeDuplicates(api, model) {
     return new Promise((resolve, reject) => {
-      const tracksToRemove = model.duplicates.map(
-        d => (d.track.linked_from ? d.track.linked_from.id : d.track.id)
+      const tracksToRemove = model.duplicates.map(d =>
+        d.track.linked_from ? d.track.linked_from.id : d.track.id
       );
       do {
         (async () => {
@@ -390,7 +391,9 @@ const fetchUserOwnedPlaylists = async (api, user) => {
   return pages.reduce(
     (array, currentPage) =>
       array.concat(
-        currentPage.items.filter(playlist => playlist.owner.id === user)
+        currentPage.items.filter(
+          playlist => playlist && playlist.owner.id === user
+        )
       ),
     []
   );
@@ -579,34 +582,41 @@ const init = function() {
         }
         app.toProcess--;
 
-        app.playlists.forEach(playlistModel =>
-          (async () => {
-            if (playlistCache.needsCheckForDuplicates(playlistModel.playlist)) {
-              let playlistTracks;
-              try {
-                playlistTracks = await _deduplicator__WEBPACK_IMPORTED_MODULE_1__["PlaylistDeduplicator"].getTracks(
-                  api,
+        for (const playlistModel of app.playlists) {
+          if (playlistCache.needsCheckForDuplicates(playlistModel.playlist)) {
+            let playlistTracks;
+            try {
+              console.log('getting tracks for', playlistModel.playlist.id);
+              playlistTracks = await _deduplicator__WEBPACK_IMPORTED_MODULE_1__["PlaylistDeduplicator"].getTracks(
+                api,
+                playlistModel.playlist
+              );
+              console.log('got tracks for', playlistModel.playlist.id);
+              playlistModel.duplicates = _deduplicator__WEBPACK_IMPORTED_MODULE_1__["PlaylistDeduplicator"].findDuplicatedTracks(
+                playlistTracks
+              );
+              if (playlistModel.duplicates.length === 0) {
+                playlistCache.storePlaylistWithoutDuplicates(
                   playlistModel.playlist
                 );
-                playlistModel.duplicates = _deduplicator__WEBPACK_IMPORTED_MODULE_1__["PlaylistDeduplicator"].findDuplicatedTracks(
-                  playlistTracks
-                );
-                if (playlistModel.duplicates.length === 0) {
-                  playlistCache.storePlaylistWithoutDuplicates(
-                    playlistModel.playlist
-                  );
-                }
-                onPlaylistProcessed(playlistModel.playlist);
-              } catch (e) {
-                console.error(
-                  'There was an error fetching tracks for playlist',
-                  playlistModel.playlist
-                );
-                onPlaylistProcessed(playlistModel.playlist);
               }
+              onPlaylistProcessed(playlistModel.playlist);
+            } catch (e) {
+              console.error(
+                'There was an error fetching tracks for playlist',
+                playlistModel.playlist,
+                e
+              );
+              onPlaylistProcessed(playlistModel.playlist);
             }
-          })()
-        );
+          } else {
+            console.log(
+              'no need to check for duplicates',
+              playlistModel.playlist.id
+            );
+            onPlaylistProcessed(playlistModel.playlist);
+          }
+        }
       }
     }
 
@@ -827,6 +837,9 @@ async function promisesForPages(api, initialRequest) {
   }
 
   const { limit, total, offset, href } = results;
+  if (total === 0) {
+    return Promise.resolve([]);
+  }
   const promises = new Array(Math.ceil((total - limit - offset) / limit))
     .fill('')
     .reduce(
@@ -937,13 +950,18 @@ class SpotifyWebApi {
             .map(k => `${k}=${options[k]}`)
             .join('&')}`;
 
-    const res = await Object(_custom_fetch__WEBPACK_IMPORTED_MODULE_0__["default"])(`${url}${optionsString}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-      },
-    });
-    return parseAPIResponse(res);
+    try {
+      const res = await Object(_custom_fetch__WEBPACK_IMPORTED_MODULE_0__["default"])(`${url}${optionsString}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
+      return parseAPIResponse(res);
+    } catch (e) {
+      console.error('e', e);
+      return Promise.reject(e);
+    }
   }
 
   async getUserPlaylists(userId, options) {
@@ -1616,4 +1634,4 @@ module.exports = g;
 /***/ })
 
 /******/ });
-//# sourceMappingURL=main.cd6a47ccf00701197c31.js.map
+//# sourceMappingURL=main.9b8db835f89b3d52bfaf.js.map
