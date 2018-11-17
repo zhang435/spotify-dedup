@@ -533,7 +533,7 @@ const init = function() {
         'user-library-modify',
       ],
     }).catch(function(error) {
-      console.error(error);
+      console.error('There was an error obtaining the token', error);
     });
 
     onTokenReceived(token);
@@ -696,7 +696,9 @@ function obtainToken(options = {}) {
     function receiveMessage(event) {
       clearInterval(pollAuthWindowClosed);
       if (event.origin !== _oauth_config__WEBPACK_IMPORTED_MODULE_0__["default"].host) {
-        reject();
+        reject({
+          message: `Origin ${event.origin} does not match ${_oauth_config__WEBPACK_IMPORTED_MODULE_0__["default"].host}`,
+        });
         return;
       }
       if (authWindow !== null) {
@@ -858,11 +860,14 @@ async function promisesForPages(api, initialRequest) {
           func()
             .then(Array.prototype.concat.bind(result))
             .catch(e => {
-              console.error(e);
+              console.error('There was an error reducing promises', e);
             })
         )
         .catch(e => {
-          console.error(e);
+          console.error(
+            'There was an error reducing promises - general catch',
+            e
+          );
         }),
     Promise.resolve([])
   );
@@ -1629,4 +1634,4 @@ module.exports = g;
 /***/ })
 
 /******/ });
-//# sourceMappingURL=main.79173c43de716ff964f0.js.map
+//# sourceMappingURL=main.8442236e9e5db4cef1c8.js.map
