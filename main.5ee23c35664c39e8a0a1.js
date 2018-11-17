@@ -261,7 +261,6 @@ class PlaylistDeduplicator extends BaseDeduplicator {
               tracks.push(item && item.track);
             });
           });
-          console.log('resolved', playlist.id);
           resolve(tracks);
         })
         .catch(reject);
@@ -490,7 +489,7 @@ const init = function() {
         })(),
       removeDuplicatesInSavedTracks: () =>
         (async () => {
-          const duplicates = await savedTracksDeduplicator.removeDuplicates(
+          const duplicates = await _deduplicator__WEBPACK_IMPORTED_MODULE_1__["SavedTracksDeduplicator"].removeDuplicates(
             app.savedTracks
           );
           app.savedTracks.duplicates = [];
@@ -586,12 +585,10 @@ const init = function() {
           if (playlistCache.needsCheckForDuplicates(playlistModel.playlist)) {
             let playlistTracks;
             try {
-              console.log('getting tracks for', playlistModel.playlist.id);
               playlistTracks = await _deduplicator__WEBPACK_IMPORTED_MODULE_1__["PlaylistDeduplicator"].getTracks(
                 api,
                 playlistModel.playlist
               );
-              console.log('got tracks for', playlistModel.playlist.id);
               playlistModel.duplicates = _deduplicator__WEBPACK_IMPORTED_MODULE_1__["PlaylistDeduplicator"].findDuplicatedTracks(
                 playlistTracks
               );
@@ -610,10 +607,6 @@ const init = function() {
               onPlaylistProcessed(playlistModel.playlist);
             }
           } else {
-            console.log(
-              'no need to check for duplicates',
-              playlistModel.playlist.id
-            );
             onPlaylistProcessed(playlistModel.playlist);
           }
         }
@@ -1634,4 +1627,4 @@ module.exports = g;
 /***/ })
 
 /******/ });
-//# sourceMappingURL=main.9b8db835f89b3d52bfaf.js.map
+//# sourceMappingURL=main.5ee23c35664c39e8a0a1.js.map
