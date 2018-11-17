@@ -490,6 +490,7 @@ const init = function() {
       removeDuplicatesInSavedTracks: () =>
         (async () => {
           const duplicates = await _deduplicator__WEBPACK_IMPORTED_MODULE_1__["SavedTracksDeduplicator"].removeDuplicates(
+            api,
             app.savedTracks
           );
           app.savedTracks.duplicates = [];
@@ -896,7 +897,8 @@ const parseAPIResponse = response =>
     )
     .then(responseBody => {
       try {
-        const parsedJSON = JSON.parse(responseBody);
+        const parsedJSON =
+          responseBody === '' ? null : JSON.parse(responseBody);
         if (response.ok) return parsedJSON;
         if (response.status >= 500) {
           return Promise.reject({
@@ -1627,4 +1629,4 @@ module.exports = g;
 /***/ })
 
 /******/ });
-//# sourceMappingURL=main.5ee23c35664c39e8a0a1.js.map
+//# sourceMappingURL=main.79173c43de716ff964f0.js.map
