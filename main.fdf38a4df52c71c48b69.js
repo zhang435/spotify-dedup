@@ -615,6 +615,7 @@ const init = function() {
     }
 
     async function onTokenReceived(accessToken) {
+      console.log(`Token has been received: '${accessToken}'`);
       app.isLoggedIn = true;
       api = new _spotify_api__WEBPACK_IMPORTED_MODULE_2__["default"]();
       api.setAccessToken(accessToken);
@@ -1634,4 +1635,4 @@ module.exports = g;
 /***/ })
 
 /******/ });
-//# sourceMappingURL=main.8442236e9e5db4cef1c8.js.map
+//# sourceMappingURL=main.fdf38a4df52c71c48b69.js.map
